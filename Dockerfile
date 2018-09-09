@@ -45,4 +45,3 @@ RUN chmod 644 /usr/local/jenkins.war
 ENTRYPOINT ["/usr/bin/java", "-jar", "/usr/local/jenkins.war"]
 EXPOSE 8080
 CMD [""]
-
