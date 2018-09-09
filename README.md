@@ -17,7 +17,7 @@ docker build --tag jenkins-rpi .
 
 ### Usage
 
-Use the image as a base for other images, or run Jenkins directly in Docker with the command
+Use the image as a base for other images, or run Jenkins directly using
 ```
-docker run --rm jenkins-rpi
+docker run -d -p 8080:8080 -v $PWD/jenkins:/var/jenkins_home:z -t jenkins-rpi
 ```
