@@ -1,7 +1,9 @@
-FROM openjdk:11.0.3-jdk
-
+FROM adoptopenjdk/openjdk11:armv7l-debian-jdk-11.0.3_7
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
+
+# Install gpg
+RUN apt-get update && apt-get install -y gnupg
 
 ARG user=jenkins
 ARG group=jenkins
