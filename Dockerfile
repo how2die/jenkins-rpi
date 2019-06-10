@@ -1,9 +1,6 @@
-FROM adoptopenjdk/openjdk11:armv7l-debian-jdk-11.0.3_7
+FROM arm32v7/openjdk
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
-
-# Install gpg
-RUN apt-get update && apt-get install -y gnupg
 
 ARG user=jenkins
 ARG group=jenkins
@@ -36,6 +33,7 @@ RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
 # Use tini as subreaper in Docker container to adopt zombie processes
 ARG TINI_VERSION=v0.16.1
 COPY tini_pub.gpg ${JENKINS_HOME}/tini_pub.gpg
+
 RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(dpkg --print-architecture) -o /sbin/tini \
   && curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(dpkg --print-architecture).asc -o /sbin/tini.asc \
   && gpg --no-tty --import ${JENKINS_HOME}/tini_pub.gpg \
@@ -72,10 +70,12 @@ EXPOSE ${agent_port}
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 ENV JENKINS_ENABLE_FUTURE_JAVA=true
 
-USER ${user}
+# adjustment: keep being root instead of changing to jenkins user
 
 COPY jenkins-support /usr/local/bin/jenkins-support
 COPY jenkins.sh /usr/local/bin/jenkins.sh
+# adjustment: extra permissions on jenkins.sh file
+RUN chmod 777 /usr/local/bin/jenkins.sh
 COPY tini-shim.sh /bin/tini
 ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/jenkins.sh"]
 
